@@ -10,7 +10,6 @@ import by.dudko.newsportal.model.News;
 import by.dudko.newsportal.repository.CommentRepository;
 import by.dudko.newsportal.repository.NewsRepository;
 import by.dudko.newsportal.service.CommentService;
-import by.dudko.newsportal.service.NewsService;
 import by.dudko.newsportal.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,6 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final NewsRepository newsRepository;
     private final UserService userService;
-    private final NewsService newsService;
     private final CommentMapper commentMapper;
 
     @Override
@@ -36,7 +34,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public PageResponse<CommentReadDto> findAllByNewsId(long newsId, Pageable pageable) {
-        newsService.findById(newsId);
+        if (!newsRepository.existsById(newsId)) {
+            throw EntityNotFoundException.byId(News.class, newsId);
+        }
         return PageResponse.of(commentRepository.findAllByNewsId(newsId, pageable)
                 .map(commentMapper::toReadDto));
     }
@@ -45,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentReadDto findById(long id) {
         return commentRepository.findById(id)
                 .map(commentMapper::toReadDto)
-                .orElseThrow(() -> EntityNotFoundException.byId(Comment.class, Long.toString(id)));
+                .orElseThrow(() -> EntityNotFoundException.byId(Comment.class, id));
     }
 
     @Transactional
@@ -59,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
                 })
                 .map(commentRepository::saveAndFlush)
                 .map(commentMapper::toReadDto)
-                .orElseThrow(() -> EntityNotFoundException.byId(News.class, Long.toString(newsId)));
+                .orElseThrow(() -> EntityNotFoundException.byId(News.class, newsId));
 
     }
 
@@ -69,14 +69,14 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findById(id)
                 .map(comment -> commentMapper.toComment(createEditDto, comment))
                 .map(commentMapper::toReadDto)
-                .orElseThrow(() -> EntityNotFoundException.byId(Comment.class, Long.toString(id)));
+                .orElseThrow(() -> EntityNotFoundException.byId(Comment.class, id));
     }
 
     @Transactional
     @Override
     public void deleteById(long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> EntityNotFoundException.byId(Comment.class, Long.toString(id)));
+                .orElseThrow(() -> EntityNotFoundException.byId(Comment.class, id));
         commentRepository.delete(comment);
     }
 }
