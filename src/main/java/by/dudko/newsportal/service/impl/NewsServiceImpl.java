@@ -6,7 +6,9 @@ import by.dudko.newsportal.dto.news.NewsReadDto;
 import by.dudko.newsportal.exception.EntityNotFoundException;
 import by.dudko.newsportal.mapper.NewsMapper;
 import by.dudko.newsportal.model.News;
+import by.dudko.newsportal.model.User;
 import by.dudko.newsportal.repository.NewsRepository;
+import by.dudko.newsportal.repository.UserRepository;
 import by.dudko.newsportal.service.CommentService;
 import by.dudko.newsportal.service.NewsService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class NewsServiceImpl implements NewsService {
     private final NewsRepository newsRepository;
+    private final UserRepository userRepository;
     private final CommentService commentService;
     private final NewsMapper newsMapper;
 
@@ -32,6 +35,9 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public PageResponse<NewsReadDto> findAllByUserId(long userId, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw EntityNotFoundException.byId(User.class, userId);
+        }
         return PageResponse.of(newsRepository.findAllByOwnerId(userId, pageable)
                 .map(newsMapper::toReadDto));
     }

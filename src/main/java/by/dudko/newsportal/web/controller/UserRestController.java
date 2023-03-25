@@ -57,6 +57,6 @@ public class UserRestController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable long id) {
-        userService.deleteUserById(id);
+        userService.deleteById(id);
     }
 }

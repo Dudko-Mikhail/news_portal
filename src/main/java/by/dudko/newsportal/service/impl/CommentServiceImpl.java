@@ -7,10 +7,11 @@ import by.dudko.newsportal.exception.EntityNotFoundException;
 import by.dudko.newsportal.mapper.CommentMapper;
 import by.dudko.newsportal.model.Comment;
 import by.dudko.newsportal.model.News;
+import by.dudko.newsportal.model.User;
 import by.dudko.newsportal.repository.CommentRepository;
 import by.dudko.newsportal.repository.NewsRepository;
+import by.dudko.newsportal.repository.UserRepository;
 import by.dudko.newsportal.service.CommentService;
-import by.dudko.newsportal.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final NewsRepository newsRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final CommentMapper commentMapper;
 
     @Override
     public PageResponse<CommentReadDto> findAllByUserId(long userId, Pageable pageable) {
-        userService.findById(userId);
+        if (!userRepository.existsById(userId)) {
+            throw EntityNotFoundException.byId(User.class, userId);
+        }
         return PageResponse.of(commentRepository.findAllByOwnerId(userId, pageable)
                 .map(commentMapper::toReadDto));
     }

@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     public UserReadDto findById(long id) {
         return userRepository.findById(id)
                 .map(userMapper::toReadDto)
-                .orElseThrow(() -> EntityNotFoundException.byId(User.class, Long.toString(id)));
+                .orElseThrow(() -> EntityNotFoundException.byId(User.class, id));
     }
 
     @Transactional
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .map(user -> userMapper.toUser(createEditDto, user))
                 .map(userMapper::toReadDto)
-                .orElseThrow(() -> EntityNotFoundException.byId(User.class, Long.toString(id)));
+                .orElseThrow(() -> EntityNotFoundException.byId(User.class, id));
     }
 
     @Transactional
@@ -76,14 +76,14 @@ public class UserServiceImpl implements UserService {
                     user.setPassword(passwordEncoder.encode(changePasswordDto.newPassword()));
                     return true;
                 })
-                .orElseThrow(() -> EntityNotFoundException.byId(User.class, Long.toString(id)));
+                .orElseThrow(() -> EntityNotFoundException.byId(User.class, id));
     }
 
     @Transactional
     @Override
-    public void deleteUserById(long id) {
+    public void deleteById(long id) {
         var user = userRepository.findById(id)
-                .orElseThrow(() -> EntityNotFoundException.byId(User.class, Long.toString(id)));
+                .orElseThrow(() -> EntityNotFoundException.byId(User.class, id));
         userRepository.delete(user);
         newsRepository.deleteAllInBatch(user.getNews());
     }

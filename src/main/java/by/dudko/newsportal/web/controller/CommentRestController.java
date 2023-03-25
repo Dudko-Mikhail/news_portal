@@ -30,6 +30,12 @@ public class CommentRestController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
+    @GetMapping("/users/{userId}/comments")
+    public PageResponse<CommentReadDto> findAllByUserId(@PathVariable long userId, Pageable pageable) {
+        return commentService.findAllByUserId(userId, pageable);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
     @GetMapping("/news/{newsId}/comments")
     public PageResponse<CommentReadDto> findAllByNewsId(@PathVariable long newsId, Pageable pageable) {
         return commentService.findAllByNewsId(newsId, pageable);

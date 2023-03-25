@@ -17,5 +17,5 @@ public interface UserService {
 
     boolean changePassword(long id, UserChangePasswordDto changePasswordDto);
 
-    void deleteUserById(long id);
+    void deleteById(long id);
 }
