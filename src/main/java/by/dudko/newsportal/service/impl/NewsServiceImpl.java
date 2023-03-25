@@ -7,6 +7,7 @@ import by.dudko.newsportal.exception.EntityNotFoundException;
 import by.dudko.newsportal.mapper.NewsMapper;
 import by.dudko.newsportal.model.News;
 import by.dudko.newsportal.repository.NewsRepository;
+import by.dudko.newsportal.service.CommentService;
 import by.dudko.newsportal.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class NewsServiceImpl implements NewsService {
     private final NewsRepository newsRepository;
+    private final CommentService commentService;
     private final NewsMapper newsMapper;
 
     @Override
@@ -35,15 +37,19 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public NewsReadDto findById(long id) {
+    public NewsReadDto findByIdWithComments(long id, Pageable pageable) {
         return newsRepository.findById(id)
                 .map(newsMapper::toReadDto)
-                .orElseThrow(() -> EntityNotFoundException.byId(News.class, Long.toString(id)));
+                .map(news -> {
+                    news.setComments(commentService.findAllByNewsId(news.getId(), pageable));
+                    return news;
+                })
+                .orElseThrow(() -> EntityNotFoundException.byId(News.class, id));
     }
 
     @Transactional
     @Override
-    public NewsReadDto save(long userId, NewsCreateEditDto createEditDto) {
+    public NewsReadDto save(NewsCreateEditDto createEditDto) {
         return Optional.of(createEditDto)
                 .map(newsMapper::toNews)
                 .map(newsRepository::saveAndFlush)
@@ -57,14 +63,14 @@ public class NewsServiceImpl implements NewsService {
         return newsRepository.findById(id)
                 .map(news -> newsMapper.toNews(createEditDto, news))
                 .map(newsMapper::toReadDto)
-                .orElseThrow(() -> EntityNotFoundException.byId(News.class, Long.toString(id)));
+                .orElseThrow(() -> EntityNotFoundException.byId(News.class, id));
     }
 
     @Transactional
     @Override
     public void deleteById(long id) {
         var news = newsRepository.findById(id)
-                .orElseThrow(() -> EntityNotFoundException.byId(News.class, Long.toString(id)));
+                .orElseThrow(() -> EntityNotFoundException.byId(News.class, id));
         newsRepository.delete(news);
     }
 }

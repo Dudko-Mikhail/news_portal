@@ -22,5 +22,6 @@ public interface NewsMapper {
     @Mapping(target = "lastEditDate", ignore = true)
     News toNews(NewsCreateEditDto createEditDto, @MappingTarget News news);
 
+    @Mapping(target = "comments", ignore = true)
     NewsReadDto toReadDto(News news);
 }

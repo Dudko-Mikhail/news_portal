@@ -10,9 +10,9 @@ public interface NewsService {
 
     PageResponse<NewsReadDto> findAllByUserId(long userId, Pageable pageable);
 
-    NewsReadDto findById(long id);
+    NewsReadDto findByIdWithComments(long id, Pageable pageable);
 
-    NewsReadDto save(long userId, NewsCreateEditDto createEditDto);
+    NewsReadDto save(NewsCreateEditDto createEditDto);
 
     NewsReadDto updateById(long id, NewsCreateEditDto createEditDto);
 

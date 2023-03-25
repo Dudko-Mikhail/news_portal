@@ -7,7 +7,6 @@ import by.dudko.newsportal.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,15 +35,14 @@ public class NewsRestController {
     }
 
     @GetMapping("/news/{id}")
-    public NewsReadDto findById(@PathVariable long id) {
-        return newsService.findById(id);
+    public NewsReadDto findByIdWithComments(@PathVariable long id, Pageable pageable) {
+        return newsService.findByIdWithComments(id, pageable);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/news")
-    public NewsReadDto create(@AuthenticationPrincipal(expression = "id") long userId,
-                              @RequestBody @Validated NewsCreateEditDto createEditDto) {
-        return newsService.save(userId, createEditDto);
+    public NewsReadDto create(@RequestBody @Validated NewsCreateEditDto createEditDto) {
+        return newsService.save(createEditDto);
     }
 
     @PutMapping("/news/{id}")
