@@ -19,7 +19,7 @@ public class EntityNotFoundException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return String.format("Entity from class: [%s] not found by field named: [%s] by value: [%s].",
+        return String.format("Entity from class [%s] not found by field named [%s] by value [%s].",
                 entityClass.getSimpleName(), fieldName, fieldValue);
     }
 }
