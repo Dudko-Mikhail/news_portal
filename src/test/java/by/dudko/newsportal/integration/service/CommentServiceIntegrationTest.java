@@ -42,9 +42,9 @@ class CommentServiceIntegrationTest {
     @Test
     void findAllByUserId() {
         PageResponse.Metadata expectedMetadata = PageResponse.Metadata.builder()
-                .numberOfElements(20)
                 .page(0)
                 .size(20)
+                .numberOfElements(20)
                 .totalElements(82)
                 .totalPages(5)
                 .build();
@@ -73,9 +73,9 @@ class CommentServiceIntegrationTest {
     @Test
     void findAllByNewsId() {
         PageResponse.Metadata expectedMetadata = PageResponse.Metadata.builder()
-                .numberOfElements(10)
                 .page(0)
                 .size(20)
+                .numberOfElements(10)
                 .totalElements(10)
                 .totalPages(1)
                 .build();
@@ -113,10 +113,10 @@ class CommentServiceIntegrationTest {
     }
 
     @Test
-    void save() {
+    void saveByNewsId() {
         CommentCreateEditDto newComment = CommentCreateEditDto.of("Amazing ideas");
 
-        CommentReadDto savedComment = commentService.save(NEWS_ID, newComment);
+        CommentReadDto savedComment = commentService.saveByNewsId(NEWS_ID, newComment);
 
         assertThat(commentRepository.findById(savedComment.getId())).isPresent();
         assertAll(
@@ -126,11 +126,11 @@ class CommentServiceIntegrationTest {
     }
 
     @Test
-    void saveWithNonExistentNewsId() {
+    void saveByNewsIdWithNonExistentNewsId() {
         CommentCreateEditDto newComment = CommentCreateEditDto.of("Amazing ideas");
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> commentService.save(NON_EXISTENT_NEWS_ID, newComment));
+                () -> commentService.saveByNewsId(NON_EXISTENT_NEWS_ID, newComment));
         assertThat(exception.getMessage()).isEqualTo(NEWS_NOT_FOUND_MESSAGE);
     }
 

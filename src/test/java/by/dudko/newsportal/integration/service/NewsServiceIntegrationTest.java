@@ -38,9 +38,9 @@ class NewsServiceIntegrationTest {
     @Test
     void findAll() {
         Metadata expectedMetadata = Metadata.builder()
-                .numberOfElements(5)
                 .page(0)
                 .size(5)
+                .numberOfElements(5)
                 .totalElements(20)
                 .totalPages(4)
                 .build();
@@ -58,9 +58,9 @@ class NewsServiceIntegrationTest {
     @Test
     void findAllByUserId() {
         Metadata expectedMetadata = Metadata.builder()
-                .numberOfElements(10)
                 .page(0)
                 .size(20)
+                .numberOfElements(10)
                 .totalElements(10)
                 .totalPages(1)
                 .build();
@@ -89,9 +89,9 @@ class NewsServiceIntegrationTest {
     @Test
     void findByIdWithComments() {
         Metadata expectedMetadata = Metadata.builder()
-                .numberOfElements(10)
                 .page(0)
                 .size(20)
+                .numberOfElements(10)
                 .totalElements(10)
                 .totalPages(1)
                 .build();
