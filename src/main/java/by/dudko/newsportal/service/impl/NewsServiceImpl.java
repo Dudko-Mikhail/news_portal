@@ -78,5 +78,6 @@ public class NewsServiceImpl implements NewsService {
         var news = newsRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.byId(News.class, id));
         newsRepository.delete(news);
+        newsRepository.flush();
     }
 }

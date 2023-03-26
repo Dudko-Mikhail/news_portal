@@ -85,6 +85,7 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.byId(User.class, id));
         userRepository.delete(user);
-        newsRepository.deleteAllInBatch(user.getNews());
+        newsRepository.deleteAllByIdInBatch(newsRepository.findAllNewsIdByOwnerId(id));
+        userRepository.flush();
     }
 }
