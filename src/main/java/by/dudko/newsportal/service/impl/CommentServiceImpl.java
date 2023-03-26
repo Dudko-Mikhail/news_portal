@@ -53,7 +53,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public CommentReadDto save(long newsId, CommentCreateEditDto createEditDto) {
+    public CommentReadDto saveByNewsId(long newsId, CommentCreateEditDto createEditDto) {
         return newsRepository.findById(newsId)
                 .map(news -> {
                     var comment = commentMapper.toComment(createEditDto);
@@ -81,5 +81,6 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.byId(Comment.class, id));
         commentRepository.delete(comment);
+        commentRepository.flush();
     }
 }

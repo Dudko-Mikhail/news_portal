@@ -12,7 +12,7 @@ public interface CommentService {
 
     CommentReadDto findById(long id);
 
-    CommentReadDto save(long newsId, CommentCreateEditDto createEditDto);
+    CommentReadDto saveByNewsId(long newsId, CommentCreateEditDto createEditDto);
 
     CommentReadDto updateById(long id, CommentCreateEditDto createEditDto);
 
