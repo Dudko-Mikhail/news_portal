@@ -45,12 +45,12 @@ public class User extends AuditedEntity<Long> {
     private Role role;
 
     @OneToMany
-    @JoinColumn(name = "inserted_by_id", referencedColumnName = "id")
+    @JoinColumn(name = "inserted_by_id", referencedColumnName = "id", updatable = false)
     @Builder.Default
     List<News> news = new ArrayList<>();
 
     @OneToMany
-    @JoinColumn(name = "inserted_by_id", referencedColumnName = "id")
+    @JoinColumn(name = "inserted_by_id", referencedColumnName = "id", updatable = false)
     @Builder.Default
     List<Comment> comments = new ArrayList<>();
 
@@ -67,7 +67,7 @@ public class User extends AuditedEntity<Long> {
             return name();
         }
 
-        public Role fromAuthority(String authority) {
+        public static Role fromAuthority(String authority) {
             return Role.valueOf(authority);
         }
     }
