@@ -2,6 +2,7 @@ package by.dudko.newsportal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,8 +20,11 @@ public class SecurityConfiguration {
                 .cors()
                 .and()
                 .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.GET, "/api/news", "/api/news/{id}", "/api/users/{userId}/news",
+                        "/api/comments/{id}", "/api/users/{userId}/comments", "/api/news/{newsId}/comments").permitAll() // guest access rights
                 .anyRequest().authenticated()
-                .and().httpBasic()
+                .and()
+                .httpBasic()
                 .and()
                 .sessionManagement().disable()
                 .formLogin().disable();
