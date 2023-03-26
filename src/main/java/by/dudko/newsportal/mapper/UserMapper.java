@@ -19,9 +19,10 @@ public interface UserMapper {
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "role", expression = "java(fromString(createEditDto.getRole()))")
-    @Mapping(target = "user.deleted", ignore = true)
     @Mapping(target = "news", ignore = true)
     @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "lastEditDate", ignore = true)
     User toUser(UserCreateEditDto createEditDto, @MappingTarget User user);
 
     UserReadDto toReadDto(User user);

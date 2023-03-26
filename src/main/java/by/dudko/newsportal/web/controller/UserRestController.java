@@ -27,8 +27,8 @@ public class UserRestController {
     private final UserService userService;
 
     @GetMapping
-    public PageResponse<UserReadDto> findAll(Pageable pageable) {
-        return userService.findAll(pageable);
+    public PageResponse<UserReadDto> findAllActiveUsers(Pageable pageable) {
+        return userService.findAllActiveUsers(pageable);
     }
 
     @GetMapping("/{id}")

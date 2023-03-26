@@ -64,7 +64,7 @@ class UserServiceTest {
                 .build();
         Pageable pageable = Pageable.ofSize(20);
         Page<User> page = new PageImpl<>(List.of(user), pageable, 1);
-        when(userRepository.findAll(pageable))
+        when(userRepository.findAllByDeletedIsFalse(pageable))
                 .thenReturn(page);
         when(userMapper.toReadDto(user))
                 .thenReturn(userReadDto);
@@ -76,13 +76,13 @@ class UserServiceTest {
                 .totalPages(1)
                 .build();
 
-        PageResponse<UserReadDto> response = userService.findAll(pageable);
+        PageResponse<UserReadDto> response = userService.findAllActiveUsers(pageable);
         List<UserReadDto> content = response.getContent();
 
         assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
         assertThat(content).hasSize(1);
         assertThat(content.get(0)).isEqualTo(userReadDto);
-        verify(userRepository).findAll(pageable);
+        verify(userRepository).findAllByDeletedIsFalse(pageable);
         verify(userMapper).toReadDto(user);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }

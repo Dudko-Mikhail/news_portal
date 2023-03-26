@@ -29,8 +29,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public PageResponse<UserReadDto> findAll(Pageable pageable) {
-        return PageResponse.of(userRepository.findAll(pageable)
+    public PageResponse<UserReadDto> findAllActiveUsers(Pageable pageable) {
+        return PageResponse.of(userRepository.findAllByDeletedIsFalse(pageable)
                 .map(userMapper::toReadDto));
     }
 

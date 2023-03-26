@@ -7,7 +7,7 @@ import by.dudko.newsportal.dto.user.UserReadDto;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-    PageResponse<UserReadDto> findAll(Pageable pageable);
+    PageResponse<UserReadDto> findAllActiveUsers(Pageable pageable);
 
     UserReadDto findById(long id);
 

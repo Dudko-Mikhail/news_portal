@@ -40,20 +40,20 @@ class UserServiceIntegrationTest {
     private final PasswordEncoder passwordEncoder;
 
     @Test
-    void findAll() { // todo ignore deleted
+    void findAll() {
         Metadata expectedMetadata = Metadata.builder()
                 .page(0)
                 .size(20)
-                .numberOfElements(4)
-                .totalElements(4)
+                .numberOfElements(3)
+                .totalElements(3)
                 .totalPages(1)
                 .build();
 
-        PageResponse<UserReadDto> response = userService.findAll(PageRequest.ofSize(20));
+        PageResponse<UserReadDto> response = userService.findAllActiveUsers(PageRequest.ofSize(20));
         List<UserReadDto> content = response.getContent();
 
         assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
-        assertThat(content).hasSize(4);
+        assertThat(content).hasSize(3);
     }
 
     @Test
