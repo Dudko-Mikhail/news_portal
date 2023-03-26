@@ -4,6 +4,7 @@ import by.dudko.newsportal.dto.PageResponse;
 import by.dudko.newsportal.dto.PageResponse.Metadata;
 import by.dudko.newsportal.dto.comment.CommentReadDto;
 import by.dudko.newsportal.dto.news.NewsCreateEditDto;
+import by.dudko.newsportal.dto.news.NewsFilter;
 import by.dudko.newsportal.dto.news.NewsReadDto;
 import by.dudko.newsportal.exception.EntityNotFoundException;
 import by.dudko.newsportal.integration.IntegrationTest;
@@ -36,7 +37,7 @@ class NewsServiceIntegrationTest {
     private final NewsRepository newsRepository;
 
     @Test
-    void findAll() {
+    void findAllByFilterWithEmptyFilter() {
         Metadata expectedMetadata = Metadata.builder()
                 .page(0)
                 .size(5)
@@ -44,14 +45,98 @@ class NewsServiceIntegrationTest {
                 .totalElements(20)
                 .totalPages(4)
                 .build();
+        NewsFilter emptyFilter = NewsFilter.builder().build();
 
-        PageResponse<NewsReadDto> response = newsService.findAll(PageRequest.ofSize(5));
+        PageResponse<NewsReadDto> response = newsService.findAllByFilter(emptyFilter, PageRequest.ofSize(5));
         List<NewsReadDto> content = response.getContent();
 
         assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
         assertAll(
                 () -> assertThat(content).hasSize(5),
                 () -> assertThat(content).allMatch(news -> news.getComments() == null)
+        );
+    }
+
+    @Test
+    void findAllByFilterWithTitleFiltration() {
+        Metadata expectedMetadata = Metadata.builder()
+                .page(0)
+                .size(5)
+                .numberOfElements(1)
+                .totalElements(1)
+                .totalPages(1)
+                .build();
+        NewsFilter titleFilter = NewsFilter.builder()
+                .title("ws3")
+                .build();
+        NewsReadDto expectedResult = NewsReadDto.builder()
+                .id(3)
+                .title("news3")
+                .text("text3")
+                .build();
+
+        PageResponse<NewsReadDto> response = newsService.findAllByFilter(titleFilter, PageRequest.ofSize(5));
+        List<NewsReadDto> content = response.getContent();
+
+        assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
+        assertAll(
+                () -> assertThat(content).hasSize(1),
+                () -> assertThat(content).allMatch(news -> news.getComments() == null),
+                () -> assertThat(content.get(0)).isEqualTo(expectedResult)
+        );
+    }
+
+    @Test
+    void findAllByFilterWithTextFiltration() {
+        Metadata expectedMetadata = Metadata.builder()
+                .page(0)
+                .size(5)
+                .numberOfElements(2)
+                .totalElements(2)
+                .totalPages(1)
+                .build();
+        NewsFilter textFilter = NewsFilter.builder()
+                .text("ext2")
+                .build();
+
+        PageResponse<NewsReadDto> response = newsService.findAllByFilter(textFilter, PageRequest.ofSize(5));
+        List<NewsReadDto> content = response.getContent();
+
+        assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
+        assertAll(
+                () -> assertThat(content).hasSize(2),
+                () -> assertThat(content).allMatch(news -> news.getComments() == null),
+                () -> assertThat(content).map(NewsReadDto::getText).containsExactlyInAnyOrder("text2", "text20")
+        );
+    }
+
+    @Test
+    void findAllByFilterWithTextAndTitleFiltration() {
+        Metadata expectedMetadata = Metadata.builder()
+                .page(0)
+                .size(5)
+                .numberOfElements(1)
+                .totalElements(1)
+                .totalPages(1)
+                .build();
+        NewsFilter newsFilter = NewsFilter.builder()
+                .title("2")
+                .text("text20")
+                .build();
+        NewsReadDto expectedResult = NewsReadDto.builder()
+                .id(20)
+                .title("news20")
+                .text("text20")
+                .build();
+
+        PageResponse<NewsReadDto> response = newsService.findAllByFilter(newsFilter, PageRequest.ofSize(5));
+        List<NewsReadDto> content = response.getContent();
+
+        assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
+        assertAll(
+                () -> assertThat(content).hasSize(1),
+                () -> assertThat(content).allMatch(news -> news.getComments() == null),
+                () -> assertThat(content.get(0)).isEqualTo(expectedResult)
         );
     }
 

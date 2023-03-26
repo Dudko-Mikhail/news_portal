@@ -2,6 +2,7 @@ package by.dudko.newsportal.web.controller;
 
 import by.dudko.newsportal.dto.PageResponse;
 import by.dudko.newsportal.dto.news.NewsCreateEditDto;
+import by.dudko.newsportal.dto.news.NewsFilter;
 import by.dudko.newsportal.dto.news.NewsReadDto;
 import by.dudko.newsportal.service.NewsService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ public class NewsRestController {
     private final NewsService newsService;
 
     @GetMapping("/news")
-    public PageResponse<NewsReadDto> findAll(Pageable pageable) {
-        return newsService.findAll(pageable);
+    public PageResponse<NewsReadDto> findAll(Pageable pageable, NewsFilter newsFilter) {
+        return newsService.findAllByFilter(newsFilter, pageable);
     }
 
     @GetMapping("/users/{userId}/news")

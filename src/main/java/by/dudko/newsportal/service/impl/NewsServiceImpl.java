@@ -2,6 +2,7 @@ package by.dudko.newsportal.service.impl;
 
 import by.dudko.newsportal.dto.PageResponse;
 import by.dudko.newsportal.dto.news.NewsCreateEditDto;
+import by.dudko.newsportal.dto.news.NewsFilter;
 import by.dudko.newsportal.dto.news.NewsReadDto;
 import by.dudko.newsportal.exception.EntityNotFoundException;
 import by.dudko.newsportal.mapper.NewsMapper;
@@ -28,8 +29,8 @@ public class NewsServiceImpl implements NewsService {
     private final NewsMapper newsMapper;
 
     @Override
-    public PageResponse<NewsReadDto> findAll(Pageable pageable) {
-        return PageResponse.of(newsRepository.findAll(pageable)
+    public PageResponse<NewsReadDto> findAllByFilter(NewsFilter newsFilter, Pageable pageable) {
+        return PageResponse.of(newsRepository.findAll(newsFilter.toSpecification(), pageable)
                 .map(newsMapper::toReadDto));
     }
 

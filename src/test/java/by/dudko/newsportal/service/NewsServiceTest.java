@@ -3,6 +3,7 @@ package by.dudko.newsportal.service;
 import by.dudko.newsportal.dto.PageResponse;
 import by.dudko.newsportal.dto.comment.CommentReadDto;
 import by.dudko.newsportal.dto.news.NewsCreateEditDto;
+import by.dudko.newsportal.dto.news.NewsFilter;
 import by.dudko.newsportal.dto.news.NewsReadDto;
 import by.dudko.newsportal.exception.EntityNotFoundException;
 import by.dudko.newsportal.mapper.NewsMapper;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,15 +52,17 @@ class NewsServiceTest {
     private NewsServiceImpl newsService;
 
     @Test
-    void findAll() {
+    void findAllByFilter() {
         News news = new News();
         NewsReadDto newsReadDto = NewsReadDto.builder()
                 .title("test title")
                 .text("test text")
                 .build();
+        NewsFilter newsFilter = NewsFilter.builder().build();
+        Specification<News> newsSearchCriteria = newsFilter.toSpecification();
         Pageable pageable = Pageable.ofSize(20);
         Page<News> page = new PageImpl<>(List.of(news), pageable, 1);
-        when(newsRepository.findAll(pageable))
+        when(newsRepository.findAll(newsSearchCriteria, pageable))
                 .thenReturn(page);
         when(newsMapper.toReadDto(news))
                 .thenReturn(newsReadDto);
@@ -70,13 +74,13 @@ class NewsServiceTest {
                 .totalPages(1)
                 .build();
 
-        PageResponse<NewsReadDto> response = newsService.findAll(pageable);
+        PageResponse<NewsReadDto> response = newsService.findAllByFilter(newsFilter, pageable);
         List<NewsReadDto> content = response.getContent();
 
         assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
         assertThat(content).hasSize(1);
         assertThat(content.get(0)).isEqualTo(newsReadDto);
-        verify(newsRepository).findAll(pageable);
+        verify(newsRepository).findAll(newsSearchCriteria, pageable);
         verify(newsMapper).toReadDto(news);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
