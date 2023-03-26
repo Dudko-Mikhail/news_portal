@@ -13,6 +13,8 @@ public interface NewsService {
 
     NewsReadDto findByIdWithComments(long id, Pageable pageable);
 
+    boolean isNewsOwner(long userId, long newsId);
+
     NewsReadDto save(NewsCreateEditDto createEditDto);
 
     NewsReadDto updateById(long id, NewsCreateEditDto createEditDto);

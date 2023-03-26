@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -162,6 +164,43 @@ class NewsServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> newsService.findByIdWithComments(NEWS_ID, Pageable.unpaged()));
+        verify(newsRepository).findById(NEWS_ID);
+        verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
+    }
+
+    @Test
+    void isNewsOwnerShouldReturnTrue() {
+        News news = News.builder()
+                .ownerId(NEWS_ID)
+                .build();
+        when(newsRepository.findById(NEWS_ID))
+                .thenReturn(Optional.of(news));
+
+        assertTrue(newsService.isNewsOwner(USER_ID, NEWS_ID));
+        verify(newsRepository).findById(NEWS_ID);
+        verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
+    }
+
+    @Test
+    void isNewsOwnerWithNonExistentNewsId() {
+        when(newsRepository.findById(NEWS_ID))
+                .thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> newsService.isNewsOwner(USER_ID, NEWS_ID));
+        verify(newsRepository).findById(NEWS_ID);
+        verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
+    }
+
+    @Test
+    void isNewsOwnerShouldReturnFalse() {
+        long notTheNewsOwnerId = 500;
+        News news = News.builder()
+                .ownerId(notTheNewsOwnerId)
+                .build();
+        when(newsRepository.findById(NEWS_ID))
+                .thenReturn(Optional.of(news));
+
+        assertFalse(newsService.isNewsOwner(USER_ID, NEWS_ID));
         verify(newsRepository).findById(NEWS_ID);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }

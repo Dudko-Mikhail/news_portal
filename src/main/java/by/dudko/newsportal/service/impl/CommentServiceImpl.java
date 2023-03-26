@@ -51,6 +51,13 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> EntityNotFoundException.byId(Comment.class, id));
     }
 
+    @Override
+    public boolean isCommentOwner(long userId, long commentId) {
+        return commentRepository.findById(commentId)
+                .map(comment -> comment.getOwnerId() == userId)
+                .orElseThrow(() -> EntityNotFoundException.byId(Comment.class, commentId));
+    }
+
     @Transactional
     @Override
     public CommentReadDto saveByNewsId(long newsId, CommentCreateEditDto createEditDto) {

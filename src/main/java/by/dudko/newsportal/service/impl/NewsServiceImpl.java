@@ -54,6 +54,13 @@ public class NewsServiceImpl implements NewsService {
                 .orElseThrow(() -> EntityNotFoundException.byId(News.class, id));
     }
 
+    @Override
+    public boolean isNewsOwner(long userId, long newsId) {
+        return newsRepository.findById(newsId)
+                .map(news -> news.getOwnerId() == userId)
+                .orElseThrow(() -> EntityNotFoundException.byId(News.class, newsId));
+    }
+
     @Transactional
     @Override
     public NewsReadDto save(NewsCreateEditDto createEditDto) {

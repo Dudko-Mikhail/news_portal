@@ -12,6 +12,8 @@ public interface CommentService {
 
     CommentReadDto findById(long id);
 
+    boolean isCommentOwner(long userId, long commentId);
+
     CommentReadDto saveByNewsId(long newsId, CommentCreateEditDto createEditDto);
 
     CommentReadDto updateById(long id, CommentCreateEditDto createEditDto);

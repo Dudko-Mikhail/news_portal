@@ -25,7 +25,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -162,6 +164,43 @@ class CommentServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> commentService.findById(COMMENT_ID));
+        verify(commentRepository).findById(COMMENT_ID);
+        verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
+    }
+
+    @Test
+    void isCommentOwnerShouldReturnTrue() {
+        Comment comment = Comment.builder()
+                .ownerId(USER_ID)
+                .build();
+        when(commentRepository.findById(COMMENT_ID))
+                .thenReturn(Optional.of(comment));
+
+        assertTrue(commentService.isCommentOwner(USER_ID, COMMENT_ID));
+        verify(commentRepository).findById(COMMENT_ID);
+        verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
+    }
+
+    @Test
+    void isCommentOwnerWithNonExistentCommentId() {
+        when(commentRepository.findById(COMMENT_ID))
+                .thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> commentService.isCommentOwner(USER_ID, COMMENT_ID));
+        verify(commentRepository).findById(COMMENT_ID);
+        verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
+    }
+
+    @Test
+    void isCommentOwnerShouldReturnFalse() {
+        long notTheCommentOwnerId = 500;
+        Comment comment = Comment.builder()
+                .ownerId(notTheCommentOwnerId)
+                .build();
+        when(commentRepository.findById(COMMENT_ID))
+                .thenReturn(Optional.of(comment));
+
+        assertFalse(commentService.isCommentOwner(USER_ID, COMMENT_ID));
         verify(commentRepository).findById(COMMENT_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }

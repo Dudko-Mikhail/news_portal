@@ -23,7 +23,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @IntegrationTest(classes = TestConfigurationWithFakeAuditorAware.class)
 @RequiredArgsConstructor
@@ -198,6 +200,26 @@ class NewsServiceIntegrationTest {
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> newsService.findByIdWithComments(NON_EXISTENT_NEWS_ID, Pageable.unpaged()));
         assertThat(exception.getMessage()).isEqualTo(NEWS_NOT_FOUND_MESSAGE);
+    }
+
+    @Test
+    void isNewsOwnerShouldReturnTrue() {
+        long newsOwnerId = 1;
+        assertTrue(newsService.isNewsOwner(newsOwnerId, NEWS_ID));
+    }
+
+    @Test
+    void isNewsOwnerWithNonExistentNewsId() {
+        long userId = 50;
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> newsService.isNewsOwner(userId, NON_EXISTENT_NEWS_ID));
+        assertThat(exception.getMessage()).isEqualTo(NEWS_NOT_FOUND_MESSAGE);
+    }
+
+    @Test
+    void isNewsOwnerShouldReturnFalse() {
+        long notTheNewsOwnerId = 500;
+        assertFalse(newsService.isNewsOwner(notTheNewsOwnerId, NEWS_ID));
     }
 
     @Test

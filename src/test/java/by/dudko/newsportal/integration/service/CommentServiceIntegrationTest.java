@@ -21,7 +21,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @IntegrationTest(classes = TestConfigurationWithFakeAuditorAware.class)
 @RequiredArgsConstructor
@@ -110,6 +112,24 @@ class CommentServiceIntegrationTest {
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> commentService.findById(NON_EXISTENT_COMMENT_ID));
         assertThat(exception.getMessage()).isEqualTo(COMMENT_NOT_FOUND_MESSAGE);
+    }
+
+    @Test
+    void isCommentOwnerShouldReturnTrue() {
+        assertTrue(commentService.isCommentOwner(USER_ID, COMMENT_ID));
+    }
+
+    @Test
+    void isCommentOwnerWithNonExistentCommentId() {
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> commentService.isCommentOwner(USER_ID, NON_EXISTENT_COMMENT_ID));
+        assertThat(exception.getMessage()).isEqualTo(COMMENT_NOT_FOUND_MESSAGE);
+    }
+
+    @Test
+    void isCommentOwnerShouldReturnFalse() {
+        long notTheCommentOwnerId = 500;
+        assertFalse(commentService.isCommentOwner(notTheCommentOwnerId, COMMENT_ID));
     }
 
     @Test
