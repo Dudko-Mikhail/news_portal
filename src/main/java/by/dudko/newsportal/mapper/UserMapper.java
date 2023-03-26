@@ -3,6 +3,7 @@ package by.dudko.newsportal.mapper;
 import by.dudko.newsportal.dto.user.UserCreateEditDto;
 import by.dudko.newsportal.dto.user.UserReadDto;
 import by.dudko.newsportal.model.User;
+import by.dudko.newsportal.model.User.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -25,11 +26,11 @@ public interface UserMapper {
 
     UserReadDto toReadDto(User user);
 
-    default String toString(User.Role role) {
+    default String toString(Role role) {
         return role.getAuthority();
     }
 
-    default User.Role fromString(String role) {
-        return User.Role.ADMIN.fromAuthority(role);
+    default Role fromString(String role) {
+        return Role.fromAuthority(role);
     }
 }

@@ -45,7 +45,7 @@ public class CommentRestController {
     @PostMapping("/news/{newsId}/comments")
     public CommentReadDto create(@PathVariable long newsId,
                                  @RequestBody @Validated CommentCreateEditDto createEditDto) {
-        return commentService.save(newsId, createEditDto);
+        return commentService.saveByNewsId(newsId, createEditDto);
     }
 
     @PutMapping("/comments/{id}")
