@@ -31,6 +31,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.liquibase:liquibase-core'
 	implementation "org.mapstruct:mapstruct:${mapStructVersion}"
+	implementation 'org.hibernate:hibernate-jcache:6.1.7.Final'
+	implementation 'org.ehcache:ehcache:3.10.8'
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'

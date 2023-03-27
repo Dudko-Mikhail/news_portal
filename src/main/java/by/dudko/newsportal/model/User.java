@@ -16,9 +16,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.SQLDelete;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +34,7 @@ import java.util.List;
 @EqualsAndHashCode(of = "username")
 @Builder
 @SQLDelete(sql = "update users set is_deleted = true where id = ?")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "users")
 public class User extends AuditedEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

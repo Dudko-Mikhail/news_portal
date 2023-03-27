@@ -15,6 +15,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.annotation.CreatedBy;
 
 @Entity
@@ -25,6 +27,7 @@ import org.springframework.data.annotation.CreatedBy;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of = "text")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "comments")
 public class Comment extends AuditedEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

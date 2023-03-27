@@ -13,6 +13,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
@@ -27,6 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of = {"title", "text"})
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "news")
 public class News extends AuditedEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +39,7 @@ public class News extends AuditedEntity<Long> {
 
     @OneToMany(mappedBy = "news")
     @Builder.Default
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "comments")
     private List<Comment> comments = new ArrayList<>();
 
     @CreatedBy
