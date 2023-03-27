@@ -5,6 +5,7 @@ import by.dudko.newsportal.dto.user.UserChangePasswordDto;
 import by.dudko.newsportal.dto.user.UserCreateEditDto;
 import by.dudko.newsportal.dto.user.UserReadDto;
 import by.dudko.newsportal.exception.EntityNotFoundException;
+import by.dudko.newsportal.exception.UniqueConstraintViolationException;
 import by.dudko.newsportal.mapper.UserMapper;
 import by.dudko.newsportal.model.User;
 import by.dudko.newsportal.repository.NewsRepository;
@@ -145,15 +146,21 @@ class UserServiceTest {
 
     @Test
     void updateById() {
-        UserCreateEditDto newUserInfo = UserCreateEditDto.builder().build();
-        User user = new User();
-        UserReadDto updatedUser = UserReadDto.builder()
-                .id(4L)
+        String newUsername = "Ivan";
+        UserCreateEditDto newUserInfo = UserCreateEditDto.builder()
+                .username(newUsername)
                 .build();
+        User user = new User();
         when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
+        when(userRepository.isUsernameUniqueExceptUserWithId(newUsername, USER_ID))
+                .thenReturn(true);
         when(userMapper.toUser(newUserInfo, user))
                 .thenReturn(user);
+        UserReadDto updatedUser = UserReadDto.builder()
+                .id(USER_ID)
+                .username(newUsername)
+                .build();
         when(userMapper.toReadDto(user))
                 .thenReturn(updatedUser);
 
@@ -161,8 +168,28 @@ class UserServiceTest {
 
         assertThat(result).isEqualTo(updatedUser);
         verify(userRepository).findById(USER_ID);
+        verify(userRepository).isUsernameUniqueExceptUserWithId(newUsername, USER_ID);
         verify(userMapper).toUser(newUserInfo, user);
         verify(userMapper).toReadDto(user);
+        verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
+    }
+
+    @Test
+    void updateByIdTryToAssignTakenUsername() {
+        String newUsername = "Ivan";
+        UserCreateEditDto newUserInfo = UserCreateEditDto.builder()
+                .username(newUsername)
+                .build();
+        User user = new User();
+        when(userRepository.findById(USER_ID))
+                .thenReturn(Optional.of(user));
+        when(userRepository.isUsernameUniqueExceptUserWithId(newUsername, USER_ID))
+                .thenReturn(false);
+
+        assertThrows(UniqueConstraintViolationException.class,
+                () -> userService.updateById(USER_ID, newUserInfo));
+        verify(userRepository).findById(USER_ID);
+        verify(userRepository).isUsernameUniqueExceptUserWithId(newUsername, USER_ID);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 
