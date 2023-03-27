@@ -5,6 +5,7 @@ import by.dudko.newsportal.dto.user.UserChangePasswordDto;
 import by.dudko.newsportal.dto.user.UserCreateEditDto;
 import by.dudko.newsportal.dto.user.UserReadDto;
 import by.dudko.newsportal.exception.EntityNotFoundException;
+import by.dudko.newsportal.exception.UniqueConstraintViolationException;
 import by.dudko.newsportal.mapper.UserMapper;
 import by.dudko.newsportal.model.User;
 import by.dudko.newsportal.repository.NewsRepository;
@@ -60,7 +61,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserReadDto updateById(long id, UserCreateEditDto createEditDto) {
         return userRepository.findById(id)
-                .map(user -> userMapper.toUser(createEditDto, user))
+                .map(user -> {
+                    String username = createEditDto.getUsername();
+                    if (!userRepository.isUsernameUniqueExceptUserWithId(username, id)) {
+                        throw UniqueConstraintViolationException.of("username", username);
+                    }
+                    return userMapper.toUser(createEditDto, user);
+                })
                 .map(userMapper::toReadDto)
                 .orElseThrow(() -> EntityNotFoundException.byId(User.class, id));
     }

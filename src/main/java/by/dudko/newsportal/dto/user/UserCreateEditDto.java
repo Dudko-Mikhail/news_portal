@@ -1,6 +1,8 @@
 package by.dudko.newsportal.dto.user;
 
 import by.dudko.newsportal.model.User;
+import by.dudko.newsportal.validation.annotation.UniqueFieldValue;
+import by.dudko.newsportal.validation.groups.CreateAction;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -9,8 +11,9 @@ import org.hibernate.validator.constraints.Length;
 
 @Value
 @Builder
-public class UserCreateEditDto { // todo unique username
+public class UserCreateEditDto {
     @NotEmpty
+    @UniqueFieldValue(entityClass = User.class, fieldName = "username", groups = CreateAction.class)
     @Length(max = 40)
     String username;
 
@@ -23,6 +26,6 @@ public class UserCreateEditDto { // todo unique username
     @Length(max = 20)
     String parentName;
 
-    @NotNull
+    @NotNull(groups = CreateAction.class)
     User.Role role;
 }

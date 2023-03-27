@@ -5,6 +5,8 @@ import by.dudko.newsportal.dto.user.UserChangePasswordDto;
 import by.dudko.newsportal.dto.user.UserCreateEditDto;
 import by.dudko.newsportal.dto.user.UserReadDto;
 import by.dudko.newsportal.service.UserService;
+import by.dudko.newsportal.validation.groups.CreateAction;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -40,7 +42,8 @@ public class UserRestController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public UserReadDto create(@RequestBody @Validated UserCreateEditDto createEditDto) {
+    public UserReadDto create(@RequestBody @Validated({Default.class,
+            CreateAction.class}) UserCreateEditDto createEditDto) {
         return userService.save(createEditDto);
     }
 
