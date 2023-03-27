@@ -12,4 +12,4 @@ spring:
         format_sql: true
         cache:
           use_second_level_cache: true
-          region.factory_class: jcache
+          region.factory_class: org.hibernate.cache.jcache.JCacheRegionFactory

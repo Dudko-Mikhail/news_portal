@@ -1,12 +1,9 @@
 package by.dudko.newsportal.aop;
 
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
@@ -20,7 +17,7 @@ import java.util.StringJoiner;
 @Component
 public class LoggingAspect {
     @Pointcut(value = "@within(org.springframework.stereotype.Service)")
-    public void isService  () {
+    public void isService() {
     }
 
     @Pointcut(value = "@within(org.springframework.web.bind.annotation.RestController)")
@@ -44,8 +41,9 @@ public class LoggingAspect {
             log.debug("Method [{}] returned value [{}]. Invoked with args {}", methodSignature, result, argsString);
             return result;
         } catch (Throwable ex) {
-            log.warn("Exception has been thrown during method execution [{}]. Invoked with args {}. Error message [{}]",
-                    methodSignature, argsString, ex.getMessage());
+            log.warn("Exception has been thrown during method execution [{}] from [{}] class." +
+                            " Invoked with args {}. Error message [{}]",
+                    methodSignature, className, argsString, ex.getMessage());
             throw ex;
         }
     }
