@@ -66,7 +66,7 @@ class UserServiceIntegrationTest {
                 () -> assertThat(searchResult.getName()).isEqualTo("Ivan"),
                 () -> assertThat(searchResult.getSurname()).isEqualTo("Ivanov"),
                 () -> assertThat(searchResult.getParentName()).isEqualTo("Ivanovich"),
-                () -> assertThat(searchResult.getRole()).isEqualTo(User.Role.ADMIN.getAuthority())
+                () -> assertThat(searchResult.getRole()).isSameAs(User.Role.ADMIN)
         );
     }
 
@@ -81,7 +81,7 @@ class UserServiceIntegrationTest {
                 .username("zebra")
                 .name("Ivan")
                 .surname("Ivanov")
-                .role(User.Role.JOURNALIST.getAuthority())
+                .role(User.Role.JOURNALIST)
                 .build();
 
         UserReadDto savedUser = userService.save(newUser);
@@ -92,7 +92,7 @@ class UserServiceIntegrationTest {
                 () -> assertThat(savedUser.getName()).isEqualTo(newUser.getName()),
                 () -> assertThat(savedUser.getSurname()).isEqualTo(newUser.getSurname()),
                 () -> assertNull(savedUser.getParentName()),
-                () -> assertThat(savedUser.getRole()).isEqualTo(newUser.getRole())
+                () -> assertThat(savedUser.getRole()).isSameAs(newUser.getRole())
         );
     }
 
@@ -102,7 +102,7 @@ class UserServiceIntegrationTest {
                 .username("zebra")
                 .name("Ivan")
                 .surname("Ivanov")
-                .role(User.Role.JOURNALIST.getAuthority())
+                .role(User.Role.JOURNALIST)
                 .build();
 
         UserReadDto updatedUser = userService.updateById(USER_ID, newUserInfo);
@@ -113,7 +113,7 @@ class UserServiceIntegrationTest {
                 () -> assertThat(updatedUser.getName()).isEqualTo(newUserInfo.getName()),
                 () -> assertThat(updatedUser.getSurname()).isEqualTo(newUserInfo.getSurname()),
                 () -> assertNull(updatedUser.getParentName()),
-                () -> assertThat(updatedUser.getRole()).isEqualTo(newUserInfo.getRole())
+                () -> assertThat(updatedUser.getRole()).isSameAs(newUserInfo.getRole())
         );
     }
 

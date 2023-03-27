@@ -1,13 +1,15 @@
 package by.dudko.newsportal.dto.user;
 
+import by.dudko.newsportal.model.User;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Value;
 import org.hibernate.validator.constraints.Length;
 
 @Value
 @Builder
-public class UserCreateEditDto { // todo uniquie username, valid role
+public class UserCreateEditDto { // todo unique username
     @NotEmpty
     @Length(max = 40)
     String username;
@@ -21,6 +23,6 @@ public class UserCreateEditDto { // todo uniquie username, valid role
     @Length(max = 20)
     String parentName;
 
-    @NotEmpty
-    String role;
+    @NotNull
+    User.Role role;
 }

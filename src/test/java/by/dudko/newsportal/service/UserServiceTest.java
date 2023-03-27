@@ -60,7 +60,7 @@ class UserServiceTest {
                 .username("zebra")
                 .name("Ivan")
                 .surname("Ivanov")
-                .role(User.Role.JOURNALIST.getAuthority())
+                .role(User.Role.JOURNALIST)
                 .build();
         Pageable pageable = Pageable.ofSize(20);
         Page<User> page = new PageImpl<>(List.of(user), pageable, 1);

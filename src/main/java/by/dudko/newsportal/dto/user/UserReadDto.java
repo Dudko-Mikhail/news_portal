@@ -1,5 +1,6 @@
 package by.dudko.newsportal.dto.user;
 
+import by.dudko.newsportal.model.User;
 import lombok.Builder;
 import lombok.Value;
 
@@ -11,5 +12,5 @@ public class UserReadDto {
     String name;
     String surname;
     String parentName;
-    String role;
+    User.Role role;
 }

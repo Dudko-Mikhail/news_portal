@@ -69,9 +69,5 @@ public class User extends AuditedEntity<Long> {
         public String getAuthority() {
             return name();
         }
-
-        public static Role fromAuthority(String authority) {
-            return Role.valueOf(authority);
-        }
     }
 }
