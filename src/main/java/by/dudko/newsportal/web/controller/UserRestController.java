@@ -60,11 +60,12 @@ public class UserRestController {
         return userService.updateById(id, createEditDto);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('ADMIN') || principal.id == #id")
     @PostMapping("/{id}/password")
     public void changePassword(@PathVariable long id, @RequestBody @Validated UserChangePasswordDto changePasswordDto) {
         if (!userService.changePassword(id, changePasswordDto)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
 
