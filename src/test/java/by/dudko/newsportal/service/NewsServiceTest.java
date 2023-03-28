@@ -82,8 +82,6 @@ class NewsServiceTest {
         assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
         assertThat(content).hasSize(1);
         assertThat(content.get(0)).isEqualTo(newsReadDto);
-        verify(newsRepository).findAll(newsSearchCriteria, pageable);
-        verify(newsMapper).toReadDto(news);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -116,9 +114,6 @@ class NewsServiceTest {
         assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
         assertThat(content).hasSize(1);
         assertThat(content.get(0)).isEqualTo(newsReadDto);
-        verify(userRepository).existsById(USER_ID);
-        verify(newsRepository).findAllByOwnerId(USER_ID, pageable);
-        verify(newsMapper).toReadDto(news);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -128,7 +123,6 @@ class NewsServiceTest {
                 .thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> newsService.findAllByUserId(USER_ID, Pageable.unpaged()));
-        verify(userRepository).existsById(USER_ID);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -152,9 +146,6 @@ class NewsServiceTest {
         NewsReadDto searchResult = newsService.findByIdWithComments(NEWS_ID, pageable);
 
         assertThat(searchResult).isEqualTo(newsReadDto);
-        verify(newsRepository).findById(NEWS_ID);
-        verify(newsMapper).toReadDto(news);
-        verify(commentService).findAllByNewsId(NEWS_ID, pageable);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -177,7 +168,6 @@ class NewsServiceTest {
                 .thenReturn(Optional.of(news));
 
         assertTrue(newsService.isNewsOwner(USER_ID, NEWS_ID));
-        verify(newsRepository).findById(NEWS_ID);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -187,7 +177,6 @@ class NewsServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> newsService.isNewsOwner(USER_ID, NEWS_ID));
-        verify(newsRepository).findById(NEWS_ID);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -201,7 +190,6 @@ class NewsServiceTest {
                 .thenReturn(Optional.of(news));
 
         assertFalse(newsService.isNewsOwner(USER_ID, NEWS_ID));
-        verify(newsRepository).findById(NEWS_ID);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -213,7 +201,7 @@ class NewsServiceTest {
         when(newsMapper.toNews(newNews))
                 .thenReturn(news);
         NewsReadDto savedNews = NewsReadDto.builder()
-                .id(10L)
+                .id(NEWS_ID)
                 .build();
         when(newsMapper.toReadDto(news))
                 .thenReturn(savedNews);
@@ -222,10 +210,7 @@ class NewsServiceTest {
 
         NewsReadDto result = newsService.save(newNews);
 
-        assertThat(result.getId()).isEqualTo(10L);
-        verify(newsMapper).toNews(newNews);
-        verify(newsMapper).toReadDto(news);
-        verify(newsRepository).saveAndFlush(news);
+        assertThat(result.getId()).isEqualTo(NEWS_ID);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -251,9 +236,6 @@ class NewsServiceTest {
         NewsReadDto result = newsService.updateById(NEWS_ID, newNewsInfo);
 
         assertThat(result).isEqualTo(updatedNews);
-        verify(newsRepository).findById(NEWS_ID);
-        verify(newsMapper).toNews(newNewsInfo, news);
-        verify(newsMapper).toReadDto(news);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -264,7 +246,6 @@ class NewsServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> newsService.updateById(NEWS_ID, newNewsInfo));
-        verify(newsRepository).findById(NEWS_ID);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 
@@ -275,7 +256,6 @@ class NewsServiceTest {
                 .thenReturn(Optional.of(news));
 
         Assertions.assertDoesNotThrow(() -> newsService.deleteById(NEWS_ID));
-        verify(newsRepository).findById(NEWS_ID);
         verify(newsRepository).delete(news);
         verify(newsRepository).flush();
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
@@ -287,7 +267,6 @@ class NewsServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> newsService.deleteById(NEWS_ID));
-        verify(newsRepository).findById(NEWS_ID);
         verifyNoMoreInteractions(commentService, newsRepository, userRepository, newsMapper);
     }
 }

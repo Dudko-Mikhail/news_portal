@@ -82,9 +82,6 @@ class CommentServiceTest {
         assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
         assertThat(content).hasSize(1);
         assertThat(content.get(0)).isEqualTo(commentReadDto);
-        verify(userRepository).existsById(USER_ID);
-        verify(commentRepository).findAllByOwnerId(USER_ID, pageable);
-        verify(commentMapper).toReadDto(comment);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -94,7 +91,6 @@ class CommentServiceTest {
                 .thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> commentService.findAllByUserId(USER_ID, Pageable.unpaged()));
-        verify(userRepository).existsById(USER_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -126,9 +122,6 @@ class CommentServiceTest {
         assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
         assertThat(content).hasSize(1);
         assertThat(content.get(0)).isEqualTo(commentReadDto);
-        verify(newsRepository).existsById(NEWS_ID);
-        verify(commentRepository).findAllByNewsId(NEWS_ID, pageable);
-        verify(commentMapper).toReadDto(comment);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -138,7 +131,6 @@ class CommentServiceTest {
                 .thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> commentService.findAllByNewsId(NEWS_ID, Pageable.unpaged()));
-        verify(newsRepository).existsById(NEWS_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -153,8 +145,6 @@ class CommentServiceTest {
         CommentReadDto searchResult = commentService.findById(COMMENT_ID);
 
         assertThat(searchResult.getId()).isEqualTo(COMMENT_ID);
-        verify(commentRepository).findById(COMMENT_ID);
-        verify(commentMapper).toReadDto(comment);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -164,7 +154,6 @@ class CommentServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> commentService.findById(COMMENT_ID));
-        verify(commentRepository).findById(COMMENT_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -177,7 +166,6 @@ class CommentServiceTest {
                 .thenReturn(Optional.of(comment));
 
         assertTrue(commentService.isCommentOwner(USER_ID, COMMENT_ID));
-        verify(commentRepository).findById(COMMENT_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -187,7 +175,6 @@ class CommentServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> commentService.isCommentOwner(USER_ID, COMMENT_ID));
-        verify(commentRepository).findById(COMMENT_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -201,7 +188,6 @@ class CommentServiceTest {
                 .thenReturn(Optional.of(comment));
 
         assertFalse(commentService.isCommentOwner(USER_ID, COMMENT_ID));
-        verify(commentRepository).findById(COMMENT_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -226,10 +212,6 @@ class CommentServiceTest {
         CommentReadDto result = commentService.saveByNewsId(NEWS_ID, newComment);
 
         assertThat(result).isEqualTo(savedComment);
-        verify(newsRepository).findById(NEWS_ID);
-        verify(commentMapper).toComment(newComment);
-        verify(commentRepository).saveAndFlush(comment);
-        verify(commentMapper).toReadDto(comment);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -240,7 +222,6 @@ class CommentServiceTest {
         CommentCreateEditDto newComment = CommentCreateEditDto.of("comment");
 
         assertThrows(EntityNotFoundException.class, () -> commentService.saveByNewsId(NEWS_ID, newComment));
-        verify(newsRepository).findById(NEWS_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -261,9 +242,6 @@ class CommentServiceTest {
         CommentReadDto result = commentService.updateById(COMMENT_ID, newCommentInfo);
 
         assertThat(result).isEqualTo(updatedComment);
-        verify(commentRepository).findById(COMMENT_ID);
-        verify(commentMapper).toComment(newCommentInfo, comment);
-        verify(commentMapper).toReadDto(comment);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -274,7 +252,6 @@ class CommentServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> commentService.findById(COMMENT_ID));
-        verify(commentRepository).findById(COMMENT_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 
@@ -285,7 +262,6 @@ class CommentServiceTest {
                 .thenReturn(Optional.of(comment));
 
         assertDoesNotThrow(() -> commentService.deleteById(COMMENT_ID));
-        verify(commentRepository).findById(COMMENT_ID);
         verify(commentRepository).delete(comment);
         verify(commentRepository).flush();
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
@@ -297,7 +273,6 @@ class CommentServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> commentService.deleteById(COMMENT_ID));
-        verify(commentRepository).findById(COMMENT_ID);
         verifyNoMoreInteractions(commentRepository, newsRepository, userRepository, commentMapper);
     }
 }

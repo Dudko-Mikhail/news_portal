@@ -83,8 +83,6 @@ class UserServiceTest {
         assertThat(response.getMetadata()).isEqualTo(expectedMetadata);
         assertThat(content).hasSize(1);
         assertThat(content.get(0)).isEqualTo(userReadDto);
-        verify(userRepository).findAllByDeletedIsFalse(pageable);
-        verify(userMapper).toReadDto(user);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 
@@ -99,8 +97,6 @@ class UserServiceTest {
         UserReadDto searchResult = userService.findById(USER_ID);
 
         assertThat(searchResult.getId()).isEqualTo(USER_ID);
-        verify(userRepository).findById(USER_ID);
-        verify(userMapper).toReadDto(user);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 
@@ -110,7 +106,6 @@ class UserServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> userService.findById(USER_ID));
-        verify(userRepository).findById(USER_ID);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 
@@ -132,9 +127,6 @@ class UserServiceTest {
         UserReadDto result = userService.save(newUser);
 
         assertThat(result.getId()).isEqualTo(10L);
-        verify(userMapper).toUser(newUser);
-        verify(userMapper).toReadDto(user);
-        verify(userRepository).saveAndFlush(user);
         verify(passwordEncoder).encode(any(String.class));
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
@@ -167,10 +159,6 @@ class UserServiceTest {
         UserReadDto result = userService.updateById(USER_ID, newUserInfo);
 
         assertThat(result).isEqualTo(updatedUser);
-        verify(userRepository).findById(USER_ID);
-        verify(userRepository).isUsernameUniqueExceptUserWithId(newUsername, USER_ID);
-        verify(userMapper).toUser(newUserInfo, user);
-        verify(userMapper).toReadDto(user);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 
@@ -188,8 +176,6 @@ class UserServiceTest {
 
         assertThrows(UniqueConstraintViolationException.class,
                 () -> userService.updateById(USER_ID, newUserInfo));
-        verify(userRepository).findById(USER_ID);
-        verify(userRepository).isUsernameUniqueExceptUserWithId(newUsername, USER_ID);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 
@@ -200,7 +186,6 @@ class UserServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> userService.updateById(USER_ID, newUserInfo));
-        verify(userRepository).findById(USER_ID);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 
@@ -219,9 +204,6 @@ class UserServiceTest {
                 .thenReturn(true);
 
         assertTrue(userService.changePassword(USER_ID, changePasswordDto));
-
-        verify(userRepository).findById(USER_ID);
-        verify(passwordEncoder).matches(oldPassword, encodedPassword);
         verify(passwordEncoder).encode(newPassword);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
@@ -233,8 +215,6 @@ class UserServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> userService.changePassword(USER_ID, changePasswordDto));
-
-        verify(userRepository).findById(USER_ID);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 
@@ -253,9 +233,6 @@ class UserServiceTest {
                 .thenReturn(false);
 
         assertFalse(userService.changePassword(USER_ID, changePasswordDto));
-
-        verify(userRepository).findById(USER_ID);
-        verify(passwordEncoder).matches(oldPassword, encodedPassword);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 
@@ -265,12 +242,11 @@ class UserServiceTest {
         when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
         List<Long> newsIds = List.of(1L, 2L, 3L);
-        when(newsRepository.findAllNewsIdByOwnerId(USER_ID)).thenReturn(newsIds);
+        when(newsRepository.findAllNewsIdByOwnerId(USER_ID))
+                .thenReturn(newsIds);
 
         assertDoesNotThrow(() -> userService.deleteById(USER_ID));
-        verify(userRepository).findById(USER_ID);
         verify(userRepository).delete(user);
-        verify(newsRepository).findAllNewsIdByOwnerId(USER_ID);
         verify(newsRepository).deleteAllByIdInBatch(newsIds);
         verify(userRepository).flush();
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
@@ -282,7 +258,6 @@ class UserServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> userService.deleteById(USER_ID));
-        verify(userRepository).findById(USER_ID);
         verifyNoMoreInteractions(userRepository, newsRepository, userMapper, passwordEncoder);
     }
 }
