@@ -7,6 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
@@ -21,6 +22,7 @@ public interface UserMapper {
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "lastEditDate", ignore = true)
+    @Mapping(target = "role", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     User toUser(UserCreateEditDto createEditDto, @MappingTarget User user);
 
     UserReadDto toReadDto(User user);
