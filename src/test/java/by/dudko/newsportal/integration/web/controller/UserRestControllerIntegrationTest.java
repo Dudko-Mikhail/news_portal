@@ -1,6 +1,5 @@
 package by.dudko.newsportal.integration.web.controller;
 
-import by.dudko.newsportal.dto.user.UserDetailsImpl;
 import by.dudko.newsportal.integration.IntegrationTest;
 import by.dudko.newsportal.model.User;
 import by.dudko.newsportal.repository.UserRepository;
@@ -13,6 +12,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Optional;
 
+import static by.dudko.newsportal.integration.web.controller.UserDetailsProvider.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,20 +30,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserRestControllerIntegrationTest {
     private static final long USER_ID = 1L;
     private static final long NON_EXISTENT_USER_ID = -1L;
-    private static final UserDetailsImpl DB_ADMIN = UserDetailsImpl.of(
-            User.builder()
-                    .id(1L)
-                    .username("admin")
-                    .role(User.Role.ADMIN)
-                    .build()
-    );
-
     private final MockMvc mockMvc;
     private final UserRepository userRepository;
 
     @Test
     void findAllActiveUsers() throws Exception {
-        mockMvc.perform(get("/api/users").with(user(DB_ADMIN)))
+        mockMvc.perform(get("/api/users").with(user(ADMIN)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("content", hasSize(3)))
@@ -59,7 +51,7 @@ class UserRestControllerIntegrationTest {
     @Test
     void findById() throws Exception {
         mockMvc.perform(get("/api/users/{id}", USER_ID)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json("""
@@ -77,7 +69,7 @@ class UserRestControllerIntegrationTest {
     @Test
     void findByIdWithNonExistentUserId() throws Exception {
         mockMvc.perform(get("/api/users/{id}", NON_EXISTENT_USER_ID)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isNotFound());
     }
 
@@ -93,7 +85,7 @@ class UserRestControllerIntegrationTest {
                                     "role": "SUBSCRIBER"
                                 }
                                 """)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json("""
@@ -105,7 +97,7 @@ class UserRestControllerIntegrationTest {
                             "role": "SUBSCRIBER"
                         }
                         """))
-                .andExpect(jsonPath("$.id").exists());
+                .andExpect(jsonPath("id").exists());
     }
 
     @Test
@@ -118,7 +110,7 @@ class UserRestControllerIntegrationTest {
                                     "role": "SUBSCRIBER"
                                 }
                                 """)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -132,7 +124,7 @@ class UserRestControllerIntegrationTest {
                                     "role": "SUBSCRIBER"
                                 }
                                 """)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -146,7 +138,7 @@ class UserRestControllerIntegrationTest {
                                     "name": "Mark"
                                 }
                                 """)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json("""
@@ -174,7 +166,7 @@ class UserRestControllerIntegrationTest {
                                     "parentName": "Ivanovich"
                                 }
                                 """)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -187,7 +179,7 @@ class UserRestControllerIntegrationTest {
                                     "username": "cobra"
                                 }
                                 """)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isNotFound());
     }
 
@@ -201,7 +193,7 @@ class UserRestControllerIntegrationTest {
                                     "newPassword": "7777"
                                 }
                                 """)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isNoContent());
     }
 
@@ -215,7 +207,7 @@ class UserRestControllerIntegrationTest {
                                     "newPassword": "7777"
                                 }
                                 """)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isNotFound());
     }
 
@@ -229,14 +221,14 @@ class UserRestControllerIntegrationTest {
                                     "newPassword": "7777"
                                 }
                                 """)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void delete() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/{id}", USER_ID)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isNoContent());
 
         Optional<User> deletedUser = userRepository.findById(USER_ID);
@@ -247,7 +239,7 @@ class UserRestControllerIntegrationTest {
     @Test
     void deleteWithNonExistentUserId() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/{id}", NON_EXISTENT_USER_ID)
-                        .with(user(DB_ADMIN)))
+                        .with(user(ADMIN)))
                 .andExpect(status().isNotFound());
     }
 }
