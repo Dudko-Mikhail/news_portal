@@ -5,6 +5,7 @@ import by.dudko.newsportal.dto.user.UserChangePasswordDto;
 import by.dudko.newsportal.dto.user.UserCreateEditDto;
 import by.dudko.newsportal.dto.user.UserReadDto;
 import by.dudko.newsportal.exception.EntityNotFoundException;
+import by.dudko.newsportal.exception.UniqueConstraintViolationException;
 import by.dudko.newsportal.integration.IntegrationTest;
 import by.dudko.newsportal.integration.TestConfigurationWithFakeAuditorAware;
 import by.dudko.newsportal.model.User;
@@ -114,6 +115,25 @@ class UserServiceIntegrationTest {
                 () -> assertThat(updatedUser.getSurname()).isEqualTo(newUserInfo.getSurname()),
                 () -> assertNull(updatedUser.getParentName()),
                 () -> assertThat(updatedUser.getRole()).isSameAs(newUserInfo.getRole())
+        );
+    }
+
+    @Test
+    void updateByIdTryToAssignTakenUsername() {
+        String takenUsername = "journalist";
+        UserCreateEditDto newUserInfo = UserCreateEditDto.builder()
+                .username(takenUsername)
+                .name("Ivan")
+                .surname("Ivanov")
+                .role(User.Role.JOURNALIST)
+                .build();
+        userRepository.findAll().forEach(System.out::println);
+
+        UniqueConstraintViolationException exception = assertThrows(UniqueConstraintViolationException.class,
+                () -> userService.updateById(USER_ID, newUserInfo));
+        assertAll(
+                () -> assertThat(exception.getFieldName()).isEqualTo("username"),
+                () -> assertThat(exception.getFieldValue()).isEqualTo(takenUsername)
         );
     }
 

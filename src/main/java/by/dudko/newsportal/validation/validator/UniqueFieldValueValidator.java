@@ -2,7 +2,6 @@ package by.dudko.newsportal.validation.validator;
 
 import by.dudko.newsportal.validation.annotation.UniqueFieldValue;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class UniqueFieldValueValidator implements ConstraintValidator<UniqueFieldValue, Object> {
-    private final EntityManagerFactory entityManagerFactory;
+    private final EntityManager entityManager;
     private String fieldName;
     private Class<?> entityClass;
     private boolean isUnique;
@@ -28,7 +27,7 @@ public class UniqueFieldValueValidator implements ConstraintValidator<UniqueFiel
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+        try (entityManager) {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<Object> query = cb.createQuery();
             Root<?> root = query.from(entityClass);
